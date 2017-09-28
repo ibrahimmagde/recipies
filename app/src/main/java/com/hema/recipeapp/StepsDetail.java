@@ -1,31 +1,44 @@
 package com.hema.recipeapp;
 
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.LoadControl;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.AdaptiveVideoTrackSelection;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,14 +46,25 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
- * Created by hema on 9/25/2017.
+ * Created by hema on 9/28/2017.
  */
 
-public class recipieListFragment extends Fragment {
+public class StepsDetail  extends Fragment{
 
-    static   RecyclerView recyclerView;
-    recipieListAdapter adapter;
+
+   static TextView desc ;
+
+
+   static private SimpleExoPlayerView msimpleExoPlayerView;
+    static  private SimpleExoPlayer player;
+   static private BandwidthMeter bandwidthMeter;
+   static private Handler mainHandler;
+
+    static RecyclerView recyclerView;
+    recAdapter adapter;
     static  public ArrayList<StepModel> data;
 
     public static String descr="ok";
@@ -52,20 +76,51 @@ public class recipieListFragment extends Fragment {
     static  RequestQueue requestQueue2;
 
     String strtext="5";
-    static private boolean isPhone;
-    static View.OnClickListener myOnClickListener;
 
-   static String  selectedName;
+     static View.OnClickListener myOnClickListener;
+
+    static String  selectedName;
+
+
+
+    public StepsDetail() {
+
+        mainHandler = new Handler();
+        bandwidthMeter = new DefaultBandwidthMeter();
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        View view = inflater.inflate(R.layout.steps_detais,null);
+        desc = (TextView) view.findViewById(R.id.desc);
+
+        strtext = getArguments().getString("title");
 
 
-        View view = inflater.inflate(R.layout.recipie_list_fragment,null);
-         strtext = getArguments().getString("title");
+        mainHandler = new Handler();
+        bandwidthMeter = new DefaultBandwidthMeter();
+        msimpleExoPlayerView = (SimpleExoPlayerView) view.findViewById(R.id.playerView);
+        msimpleExoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+        msimpleExoPlayerView.setVisibility(View.INVISIBLE);
 
-        Log.d("title",strtext);
+        if(getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            desc.setVisibility(View.GONE);
+
+
+        }
+        requestQueue = Volley.newRequestQueue(getContext());
+
+        requestQueue2 = Volley.newRequestQueue(getContext());
+        recyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view2);
+
+        myOnClickListener = new MyOnClickListener(getActivity());
+
+        data = new ArrayList<>();
+        data.add(new StepModel(-2,"Ingredients","",""));
+
+        downloadRecipes("https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json");
 
         return view;
     }
@@ -73,21 +128,65 @@ public class recipieListFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        requestQueue = Volley.newRequestQueue(getContext());
-
-        requestQueue2 = Volley.newRequestQueue(getContext());
-        recyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view2);
-        isPhone = getResources().getBoolean(R.bool.is_phone);
-        FragmentActivity f =new FragmentActivity() ;
-        myOnClickListener = new recipieListFragment.MyOnClickListener(getActivity(),f);
-
-        data = new ArrayList<>();
-        data.add(new StepModel(-2,"Ingredients","",""));
-
-        downloadRecipes("https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json");
 
 
     }
+
+    private static void initializePlayer(Uri mediaUri,Context c) {
+        if (player == null) {
+            TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveVideoTrackSelection.Factory(bandwidthMeter);
+            DefaultTrackSelector trackSelector = new DefaultTrackSelector(mainHandler, videoTrackSelectionFactory);
+            LoadControl loadControl = new DefaultLoadControl();
+
+            player = ExoPlayerFactory.newSimpleInstance(c, trackSelector, loadControl);
+            msimpleExoPlayerView.setPlayer(player);
+
+            String userAgent = Util.getUserAgent(c, "Baking App");
+            MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(c, userAgent), new DefaultExtractorsFactory(), null, null);
+            player.prepare(mediaSource);
+            player.setPlayWhenReady(true);
+
+
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        if (player!=null) {
+            player.stop();
+            player.release();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (player!=null) {
+            player.stop();
+            player.release();
+            player=null;
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (player!=null) {
+            player.stop();
+            player.release();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (player!=null) {
+            player.stop();
+            player.release();
+        }
+    }
+
 
 
     public void downloadRecipes(String JsonURL){
@@ -119,11 +218,12 @@ public class recipieListFragment extends Fragment {
                                         String mDescription = jsonObject.getString("description");
                                         String mVideoURL = jsonObject.getString("videoURL");
 
+
                                         data.add(new StepModel(id,mShortDescription,mDescription,mVideoURL));
 
                                     }
                                     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                                    adapter = new recipieListAdapter(data);
+                                    adapter = new recAdapter(data);
                                     recyclerView.setAdapter(adapter);
                                     adapter.notifyDataSetChanged();
 
@@ -131,7 +231,7 @@ public class recipieListFragment extends Fragment {
                             }
                         }
 
-                                // Try and catch are included to handle any errors due to JSON
+                        // Try and catch are included to handle any errors due to JSON
                         catch (JSONException e) {
                             // If an error occurs, this prints the error to the log
                             e.printStackTrace();
@@ -155,12 +255,10 @@ public class recipieListFragment extends Fragment {
     public   static  class MyOnClickListener implements View.OnClickListener {
 
         private final Context context;
-        private final  FragmentActivity f;
 
 
-        private MyOnClickListener(Context context,FragmentActivity activity) {
+        private MyOnClickListener(Context context) {
             this.context = context;
-            f=activity;
         }
 
         @Override
@@ -171,56 +269,42 @@ public class recipieListFragment extends Fragment {
                     = recyclerView.findViewHolderForPosition(selectedItemPosition);
             TextView textViewName
                     = (TextView) viewHolder.itemView.findViewById(R.id.textRecipe2);
-             selectedName = (String) textViewName.getText();
 
+            selectedName = (String) textViewName.getText();
+
+            Toast.makeText(context,selectedName,Toast.LENGTH_LONG).show();
 
             for (StepModel s : data) {
                 if (s.getShortDescription().equals(selectedName)) {
-                    url=s.getVideoURL();
-                    descr=s.getDescription();
-                    sho=s.getShortDescription();
+                    if(s.getShortDescription().equals("Ingredients")){
+
+                        SharedPreferences preferences = context.getSharedPreferences("SHARED", MODE_PRIVATE);
+                        String ingre=  preferences.getString("ingredients", "choose your Favorite Recipe ");
+                        desc.setText(ingre);
+                        msimpleExoPlayerView.setVisibility(View.INVISIBLE);
+
+
+                    }
+                    else {
+                        msimpleExoPlayerView.setVisibility(View.VISIBLE);
+
+                        initializePlayer(Uri.parse(s.getVideoURL()), context);
+                        desc.setText(s.getShortDescription());
+
+                    }
+
+
 
                 }
             }
 
-
-
-
-           Log.d("detail",selectedName);
-
-            if (isPhone) {
-
-                Intent i = new Intent(context, stepDetailActivity.class);
-              //  i.putExtra("so",selectedName);
-                context.startActivity(i);
-               Log.d("open detail","no");
-
-            }
-            else {
-                android.support.v4.app.FragmentManager fragmentManager =f.getSupportFragmentManager();
-                android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                stepDetailFragment animalDetailFragment = new stepDetailFragment();
-                ingredientFragment mIngredientFragment = new ingredientFragment();
-
-                Log.d("sho",recipieListFragment.sho);
-                Toast.makeText(context,recipieListFragment.sho,Toast.LENGTH_LONG).show();
-
-                if(recipieListFragment.sho.equals("Ingredients")) {
-                    fragmentTransaction.replace(R.id.framelayout_detail, mIngredientFragment);
-
-                }
-                else
-                {
-                    fragmentTransaction.replace(R.id.framelayout_detail, animalDetailFragment);
-
-                }
-                fragmentTransaction.commit();
+            Log.d("detail",selectedName);
 
 
             }
 
 
-        }
+
 
        /* private void removeItem(View v) {
 

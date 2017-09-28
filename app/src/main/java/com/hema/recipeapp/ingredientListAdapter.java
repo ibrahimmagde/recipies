@@ -9,12 +9,12 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
- * Created by hema on 9/26/2017.
+ * Created by hema on 9/28/2017.
  */
 
-public class recipieListAdapter  extends RecyclerView.Adapter<recipieListAdapter.MyViewHolder> {
+public class ingredientListAdapter extends RecyclerView.Adapter<ingredientListAdapter.MyViewHolder> {
 
-    private ArrayList<StepModel> dataSet;
+    private ArrayList<String> dataSet;
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -24,31 +24,32 @@ public class recipieListAdapter  extends RecyclerView.Adapter<recipieListAdapter
             super(itemView);
             this.textViewName = (TextView) itemView.findViewById(R.id.textRecipe2);
 
+
         }
     }
 
-    public recipieListAdapter(ArrayList<StepModel> data) {
+    public ingredientListAdapter(ArrayList<String> data) {
         this.dataSet = data;
     }
 
     @Override
-    public recipieListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
-                                                         int viewType) {
+    public ingredientListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
+                                                              int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recipie_list_row, parent, false);
         view.setOnClickListener(recipieListFragment.myOnClickListener);
 
 
-        recipieListAdapter.MyViewHolder myViewHolder = new recipieListAdapter.MyViewHolder(view);
+        ingredientListAdapter.MyViewHolder myViewHolder = new ingredientListAdapter.MyViewHolder(view);
         return myViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(final recipieListAdapter.MyViewHolder holder, final int listPosition) {
+    public void onBindViewHolder(final ingredientListAdapter.MyViewHolder holder, final int listPosition) {
 
         TextView textViewName = holder.textViewName;
 
-        textViewName.setText(dataSet.get(listPosition).getShortDescription());
+        textViewName.setText(dataSet.get(listPosition));
 
     }
 

@@ -17,43 +17,42 @@ public class RecipieListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipie_list);
+        isPhone = getResources().getBoolean(R.bool.is_phone);
 
-        recipieListFragment animalListFragment = new recipieListFragment();
+        recipieListFragment list = new recipieListFragment();
+        StepsDetail mStepsDetail = new StepsDetail();
 
-         FragmentManager fragmentManager = getSupportFragmentManager();
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
         Bundle extras = getIntent().getExtras();
         title= extras.getString("TITLE");
         Bundle bundle = new Bundle();
 
         bundle.putString("title", title);
 // set Fragmentclass Arguments
-        animalListFragment.setArguments(bundle);
+        list.setArguments(bundle);
+        mStepsDetail.setArguments(bundle);
 
-         fragmentTransaction.add(R.id.framelayout_left,animalListFragment);
+        if(isPhone){
+            fragmentTransaction.add(R.id.framelayout_list,list);
+            Log.d("i'm phooone","ok");
+
+        }
+        else {
+          fragmentTransaction.add(R.id.framelayout_list,mStepsDetail);
+            Log.d("i'm taaaaablet","ok");
+            Toast.makeText(this,"tablet" +
+                    "",Toast.LENGTH_LONG).show();
 
 
 
-        if(findViewById(R.id.framelayout_right)!=null){
-
-
-
-             animalDetailFragment = new stepDetailFragment();
-
-            fragmentTransaction.add(R.id.framelayout_right,animalDetailFragment);
         }
 
         fragmentTransaction.commit();
 
 
 
-    }
-
-    public void refresh(){
-        stepDetailFragment frag_name = new stepDetailFragment();
-        FragmentManager manager = this.getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.framelayout_right, frag_name, frag_name.getTag()).commit();
     }
 
 

@@ -9,7 +9,7 @@
 
     <FrameLayout
 
-        android:id="@+id/framelayout_detail"
+        android:id="@+id/framelayout_ingr"
 
         android:layout_width="match_parent"
 

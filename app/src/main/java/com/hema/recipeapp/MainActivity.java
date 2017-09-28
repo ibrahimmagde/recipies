@@ -1,9 +1,12 @@
 package com.hema.recipeapp;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.os.Environment;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,12 +17,10 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -27,11 +28,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity {
 
-     RequestQueue requestQueue;
+    RequestQueue requestQueue;
+    static RequestQueue requestQueue2;
+
     static RecyclerView recyclerView;
     static RecyclerView.LayoutManager layoutManager;
     static RecipeAdapter adapter ;
@@ -43,8 +46,13 @@ public class MainActivity extends AppCompatActivity {
     private int columns;
 
     private boolean isPhone;
+    static  public ArrayList<String> ingrdients=new ArrayList<>();
 
     static   String selectedName;
+
+    static public String mIngredients="";
+
+  static   SharedPreferences.Editor editor;
 
 
     @Override
@@ -53,23 +61,40 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         isPhone = getResources().getBoolean(R.bool.is_phone);
+        editor = getSharedPreferences("SHARED", MODE_PRIVATE).edit();
 
 
-       myOnClickListener = new MyOnClickListener(this);
+
+        myOnClickListener = new MyOnClickListener(this);
 
         data=new ArrayList<>();
         requestQueue = Volley.newRequestQueue(this);
+        requestQueue2 = Volley.newRequestQueue(this);
 
-        downloadRecipes("https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json");
         recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        if (isOnline()) {
 
+            downloadRecipes("https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json");
+        }
+        else{
+            Toast.makeText(this,"Please connect to the internet",Toast.LENGTH_LONG).show();
+
+        }
 
 
 
 
     }
 
-   public   static  class MyOnClickListener implements View.OnClickListener {
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+
+    public   static  class MyOnClickListener implements View.OnClickListener {
 
         private final Context context;
 
@@ -86,10 +111,13 @@ public class MainActivity extends AppCompatActivity {
                     = (TextView) viewHolder.itemView.findViewById(R.id.textRecipe);
              selectedName = (String) textViewName.getText();
 
-            Intent i = new Intent(context, RecipieListActivity.class);
-            i.putExtra("TITLE",selectedName);
-
+            Intent i = new Intent(context, ItemListActivity.class);
+            i.putExtra("title",selectedName);
             context.startActivity(i);
+
+            downloadIngrediesn("https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json",context);
+
+
 
         }
 
@@ -130,8 +158,6 @@ public class MainActivity extends AppCompatActivity {
                                 data.add(obj);
 
 
-
-
                             }
                             if (isPhone) {
                                 columns = 2;
@@ -166,6 +192,86 @@ public class MainActivity extends AppCompatActivity {
         // Adds the JSON array request "arrayreq" to the request queue
         requestQueue.add(arrayreq);
 }
+
+
+    public static void downloadIngrediesn(String JsonURL, final Context mContext){
+        // Creating the JsonArrayRequest class called arrayreq, passing the required parameters
+        //JsonURL is the URL to be fetched from
+        JsonArrayRequest arrayreq = new JsonArrayRequest(JsonURL,
+                // The second parameter Listener overrides the method onResponse() and passes
+                //JSONArray as a parameter
+                new Response.Listener<JSONArray>() {
+
+                    // Takes the response from the JSON request
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+
+                            for (int j = 0; j < response.length(); j++) {
+                                JSONObject rec = response.getJSONObject(j);
+                                String nam = rec.getString("name");
+                                Log.d("nam", nam);
+                                Log.d("selectedname", selectedName);
+                                if (nam.equals(selectedName) ){
+
+                                    JSONArray recArry = rec.getJSONArray("ingredients");
+                                    Log.d("ingrediennts", recArry.getJSONObject(j).getString("quantity"));
+
+                                    for (int i = 0; i < recArry.length(); i++) {
+                                        JSONObject jsonObject = recArry.getJSONObject(i);
+
+                                        String quanttiy = jsonObject.getString("quantity");
+                                        String measure = jsonObject.getString("measure");
+                                        String ingredient = jsonObject.getString("ingredient");
+
+                                        ingrdients.add(quanttiy+measure +" of "+ingredient);
+                                        mIngredients +=quanttiy+measure +" of "+ingredient;
+                                        mIngredients+="\n";
+                                        Log.d("ingrediennt", quanttiy+measure +" of "+ingredient);
+                                    }
+                                    editor.putString("ingredients",mIngredients  );
+                                     mIngredients="";
+                                    editor.apply();
+
+                                    Intent intentwidget = new Intent(mContext, widget.class);
+                                    intentwidget.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                                    int ids[] = AppWidgetManager.getInstance(mContext).getAppWidgetIds(new ComponentName(mContext, widget.class));
+                                    intentwidget.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+                                    mContext.sendBroadcast(intentwidget);
+
+
+
+                                }
+
+
+                            }
+                        }
+
+                        // Try and catch are included to handle any errors due to JSON
+                        catch (JSONException e) {
+                            // If an error occurs, this prints the error to the log
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                // The final parameter overrides the method onErrorResponse() and passes VolleyError
+                //as a parameter
+                new Response.ErrorListener() {
+                    @Override
+                    // Handles errors that occur due to Volley
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Volley", "Error");
+                    }
+                }
+        );
+        // Adds the JSON array request "arrayreq" to the request queue
+        requestQueue2.add(arrayreq);
+    }
+
+
+
+
+
 
 
 
