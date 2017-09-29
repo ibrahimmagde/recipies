@@ -1,19 +1,51 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                 xmlns:tools="http://schemas.android.com/tools"
-                                                 android:layout_width="match_parent"
-                                                 android:layout_height="match_parent"
-                                                 android:fitsSystemWindows="true"
-                                                 tools:context="com.hema.recipeapp.ItemDetailActivity"
-                                                 tools:ignore="MergeRootFrame">
+<ScrollView  android:layout_height="match_parent"
+             android:layout_width="match_parent"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:orientation="vertical"
+             xmlns:android="http://schemas.android.com/apk/res/android">
 
+<LinearLayout
 
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/item_detail_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        >
 
-</android.support.design.widget.CoordinatorLayout>
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="left"
+            android:background="@drawable/prev"
+            android:id="@+id/back"
+            android:layout_marginRight="150dp"
+            />
+
+        <Button
+            android:id="@+id/next"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="right"
+            android:background="@drawable/next"
+            android:onClick="next"
+            android:src="@drawable/next"
+            />
+
+    </LinearLayout>
+
+
+</LinearLayout>
+</ScrollView>

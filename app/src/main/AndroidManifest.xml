@@ -32,9 +32,7 @@
                 android:resource="@xml/widget_provider_info"/>
         </receiver>
 
-        <activity android:name=".RecipieListActivity">
-        </activity>
-        <activity android:name=".stepDetailActivity"/>
+
 
         <receiver android:name=".widget">
             <intent-filter>
@@ -46,8 +44,6 @@
                 android:resource="@xml/widget_provider_list"/>
         </receiver>
 
-        <activity android:name=".Ingredient">
-        </activity>
 
         <activity
             android:name=".ItemListActivity">

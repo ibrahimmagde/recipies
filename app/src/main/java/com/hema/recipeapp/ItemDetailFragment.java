@@ -1,6 +1,7 @@
 package com.hema.recipeapp;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Handler;
@@ -10,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,13 +45,19 @@ public class ItemDetailFragment extends Fragment {
     TextView desc;
 
 
-    private SimpleExoPlayerView msimpleExoPlayerView;
+ //   private SimpleExoPlayerView msimpleExoPlayerView;
     private SimpleExoPlayer player;
     private BandwidthMeter bandwidthMeter;
     private Handler mainHandler;
 
 
-        String url,dec,sho,tab;
+     SimpleExoPlayerView msimpleExoPlayerView;
+
+
+
+    String url,dec,sho,tab;
+
+    int pos;
 
     public ItemDetailFragment() {
     }
@@ -58,13 +66,13 @@ public class ItemDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-           url =  getArguments().getString(ARG_ITEM_URL);
+
+
+        url =  getArguments().getString(ARG_ITEM_URL);
            dec= getArguments().getString(ARG_ITEM_DESC);
            sho =getArguments().getString(ARG_ITEM_SHOW);
            tab=getArguments().getString(ARG_ITEM_TAB);
-        Toast.makeText(getContext(),tab,Toast.LENGTH_LONG).show();
-
-
+        //Toast.makeText(getContext(),String.valueOf(ItemListActivity.counter),Toast.LENGTH_LONG).show();
 
     }
 
@@ -81,14 +89,30 @@ public class ItemDetailFragment extends Fragment {
         msimpleExoPlayerView = (SimpleExoPlayerView) rootView.findViewById(R.id.playerView);
         msimpleExoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
 
-        initializePlayer(Uri.parse(recipieListFragment.url));
+
+
 
 
         if (getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE&&ARG_ITEM_TAB.equals("no")) {
             desc.setVisibility(View.GONE);
         }
 
+        initializePlayer(Uri.parse(url));
+
+
         desc.setText(dec);
+
+        if(url.equals("")){
+            msimpleExoPlayerView.setVisibility(View.GONE);
+
+        }
+        else {
+            msimpleExoPlayerView.setVisibility(View.VISIBLE);
+        }
+
+
+
+
 
 
         return rootView;
@@ -111,6 +135,10 @@ public class ItemDetailFragment extends Fragment {
 
         }
     }
+
+
+
+
 
     @Override
     public void onDetach() {

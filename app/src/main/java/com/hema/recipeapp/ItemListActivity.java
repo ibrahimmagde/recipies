@@ -2,15 +2,10 @@ package com.hema.recipeapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,13 +19,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 
@@ -43,6 +38,12 @@ public class ItemListActivity extends AppCompatActivity {
     String strtext;
     static  String selectedName,url="kpkp",sho="lplp",descr="mlml";
     static boolean isPhone =false;
+    public static int counter=0;
+    public static int Size;
+    public static int imIngr =0;
+
+
+
 
     static View.OnClickListener myOnClickListener;
 
@@ -235,45 +236,98 @@ public class ItemListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, final int position) {
 
+
             holder.mContentView.setText(mValues.get(position).getShortDescription());
-            holder.mItem = mValues.get(position);
+
+            holder.mItem= mValues.get(position);
+
+            Size=mValues.size();
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
+                    counter =position;
+
+
+                    //  Toast.makeText(getApplicationContext(),String.valueOf(counter) + " pos "+String.valueOf(position),Toast.LENGTH_LONG).show();
+
 
                     if (mTwoPane) {
 
                         Bundle arguments = new Bundle();
-                        arguments.putString(ItemDetailFragment.ARG_ITEM_URL, holder.mItem.getVideoURL());
-                        arguments.putString(ItemDetailFragment.ARG_ITEM_DESC, holder.mItem.getDescription());
-                        arguments.putString(ItemDetailFragment.ARG_ITEM_SHOW, holder.mItem.getShortDescription());
-                        arguments.putString(ItemDetailFragment.ARG_ITEM_TAB, "yes");
+
+                        if(position==0) {
+                        //      ItemDetailFragment.msimpleExoPlayerView.setVisibility(View.INVISIBLE);
+
+                            SharedPreferences preferences = getApplicationContext().getSharedPreferences("SHARED", MODE_PRIVATE);
+                            String ingre = preferences.getString("ingredients", "choose your Favorite Recipe ");
+                         //   Toast.makeText(getApplicationContext(), ingre, Toast.LENGTH_LONG).show();
+
+                            arguments.putString(ItemDetailFragment.ARG_ITEM_URL, "");
+
+                            arguments.putString(ItemDetailFragment.ARG_ITEM_DESC, ingre);
+
+                            arguments.putString(ItemDetailFragment.ARG_ITEM_SHOW,
+                                    "Ingredients");
+                            imIngr=1;
+
+                        }
+
+                        else {
+
+                             imIngr=0;
+                            arguments.putString(ItemDetailFragment.ARG_ITEM_URL, holder.mItem.getVideoURL());
+                            arguments.putString(ItemDetailFragment.ARG_ITEM_DESC, holder.mItem.getDescription());
+                            arguments.putString(ItemDetailFragment.ARG_ITEM_SHOW, holder.mItem.getShortDescription());
+
+                                }
+                            arguments.putString(ItemDetailFragment.ARG_ITEM_TAB, "yes");
+
+                            ItemDetailFragment fragment = new ItemDetailFragment();
+                            fragment.setArguments(arguments);
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.item_detail_container, fragment)
+                                    .commit();
 
 
-
-                        ItemDetailFragment fragment = new ItemDetailFragment();
-                        fragment.setArguments(arguments);
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.item_detail_container, fragment)
-                                .commit();
-
-                        Toast.makeText(getApplicationContext(),"two_panes",Toast.LENGTH_LONG).show();
 
                     } else {
                         Context context = v.getContext();
 
-                        Intent intent = new Intent(context, ItemDetailActivity.class);
 
-                        intent.putExtra(ItemDetailFragment.ARG_ITEM_URL, holder.mItem.getVideoURL());
-                        intent.putExtra(ItemDetailFragment.ARG_ITEM_DESC, holder.mItem.getDescription());
-                        intent.putExtra(ItemDetailFragment.ARG_ITEM_SHOW, holder.mItem.getShortDescription());
+                        Intent intent = new Intent(context, ItemDetailActivity.class);
                         intent.putExtra(ItemDetailFragment.ARG_ITEM_TAB, "no");
+
+                        if(position==0) {
+                            //      ItemDetailFragment.msimpleExoPlayerView.setVisibility(View.INVISIBLE);
+
+                            SharedPreferences preferences = getApplicationContext().getSharedPreferences("SHARED", MODE_PRIVATE);
+                            String ingre = preferences.getString("ingredients", "choose your Favorite Recipe ");
+                           // Toast.makeText(getApplicationContext(), ingre, Toast.LENGTH_LONG).show();
+
+                            intent.putExtra(ItemDetailFragment.ARG_ITEM_URL, "");
+
+                            intent.putExtra(ItemDetailFragment.ARG_ITEM_DESC, ingre);
+
+                            intent.putExtra(ItemDetailFragment.ARG_ITEM_SHOW,
+                                    "Ingredients");
+                            imIngr=1;
+
+
+                        }
+                        else {
+
+                            imIngr=0;
+
+                            intent.putExtra(ItemDetailFragment.ARG_ITEM_URL, holder.mItem.getVideoURL());
+                            intent.putExtra(ItemDetailFragment.ARG_ITEM_DESC, holder.mItem.getDescription());
+                            intent.putExtra(ItemDetailFragment.ARG_ITEM_SHOW, holder.mItem.getShortDescription());
+                        }
+
 
 
                         context.startActivity(intent);
-                        Toast.makeText(getApplicationContext(),holder.mItem.getDescription(),Toast.LENGTH_LONG).show();
 
 
                     }

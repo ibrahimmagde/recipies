@@ -230,8 +230,11 @@ public class MainActivity extends AppCompatActivity {
                                         Log.d("ingrediennt", quanttiy+measure +" of "+ingredient);
                                     }
                                     editor.putString("ingredients",mIngredients  );
-                                     mIngredients="";
+
                                     editor.apply();
+                                    mIngredients="";
+
+
 
                                     Intent intentwidget = new Intent(mContext, widget.class);
                                     intentwidget.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
