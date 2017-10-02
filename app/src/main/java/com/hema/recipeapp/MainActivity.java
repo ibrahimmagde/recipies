@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
+
 public class MainActivity extends AppCompatActivity {
 
     RequestQueue requestQueue;
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         isPhone = getResources().getBoolean(R.bool.is_phone);
         editor = getSharedPreferences("SHARED", MODE_PRIVATE).edit();
+
 
 
 

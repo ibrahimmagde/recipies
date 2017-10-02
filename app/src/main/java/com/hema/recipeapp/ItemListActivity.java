@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +20,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 
 import org.json.JSONArray;
@@ -69,7 +71,7 @@ public class ItemListActivity extends AppCompatActivity {
 
 
         data = new ArrayList<>();
-        data.add(new StepModel(-2,"Ingredients","",""));
+        data.add(new StepModel(-2,"Ingredients","","",""));
         downloadRecipes("https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json");
 
 
@@ -166,8 +168,13 @@ public class ItemListActivity extends AppCompatActivity {
                                         int id = jsonObject.getInt("id");
                                         String mDescription = jsonObject.getString("description");
                                         String mVideoURL = jsonObject.getString("videoURL");
+                                        String photo = jsonObject.getString("thumbnailURL");
 
-                                        data.add(new StepModel(id,mShortDescription,mDescription,mVideoURL));
+                                     /*   if(mShortDescription.equals("Finish filling prep"))
+                                            Toast.makeText(getApplicationContext(),photo,Toast.LENGTH_LONG).show();*/
+
+
+                                        data.add(new StepModel(id,mShortDescription,mDescription,mVideoURL,photo));
 
                                     }
 
@@ -206,12 +213,15 @@ public class ItemListActivity extends AppCompatActivity {
             public final View mView;
             public final TextView mContentView;
             public  StepModel mItem;
+            public final ImageView photo;
 
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
                 mContentView = (TextView) view.findViewById(R.id.content);
+                photo =(ImageView) view.findViewById(R.id.step_image);
+
             }
 
             @Override
@@ -238,10 +248,16 @@ public class ItemListActivity extends AppCompatActivity {
 
 
             holder.mContentView.setText(mValues.get(position).getShortDescription());
+            Glide.with(getApplicationContext())
+                    .load(mValues.get(position).getPhoto())
+                    .into(holder.photo);
+
+
 
             holder.mItem= mValues.get(position);
 
             Size=mValues.size();
+
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -249,6 +265,7 @@ public class ItemListActivity extends AppCompatActivity {
 
                     counter =position;
 
+                    Toast.makeText(getApplication(),mValues.get(position).getPhoto(),Toast.LENGTH_LONG).show();  ;
 
                     //  Toast.makeText(getApplicationContext(),String.valueOf(counter) + " pos "+String.valueOf(position),Toast.LENGTH_LONG).show();
 

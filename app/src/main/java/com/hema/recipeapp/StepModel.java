@@ -10,12 +10,18 @@ public class StepModel {
     String shortDescription;
     String description;
     String videoURL;
+    String photo;
 
-    public StepModel(int mId, String mShortDescription, String mDescription, String mVideoURL) {
+
+    public StepModel(int mId, String mShortDescription, String mDescription, String mVideoURL, String p) {
         id = mId;
         shortDescription = mShortDescription;
         description = mDescription;
         videoURL = mVideoURL;
+        photo=p;
+    }
+    public String getPhoto() {
+        return photo;
     }
 
     public int getId() {
