@@ -47,8 +47,8 @@ public class ItemDetailFragment extends Fragment {
 
  //   private SimpleExoPlayerView msimpleExoPlayerView;
     private SimpleExoPlayer player;
-    private BandwidthMeter bandwidthMeter;
-    private Handler mainHandler;
+    public BandwidthMeter bandwidthMeter;
+    public Handler mainHandler;
 
 
      SimpleExoPlayerView msimpleExoPlayerView;
@@ -84,8 +84,7 @@ public class ItemDetailFragment extends Fragment {
 
         desc= (TextView) rootView.findViewById(R.id.item_detail);
 
-        mainHandler = new Handler();
-        bandwidthMeter = new DefaultBandwidthMeter();
+
         msimpleExoPlayerView = (SimpleExoPlayerView) rootView.findViewById(R.id.playerView);
         msimpleExoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
 
@@ -120,8 +119,7 @@ public class ItemDetailFragment extends Fragment {
 
     private void initializePlayer(Uri mediaUri) {
         if (player == null) {
-            TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveVideoTrackSelection.Factory(bandwidthMeter);
-            DefaultTrackSelector trackSelector = new DefaultTrackSelector(mainHandler, videoTrackSelectionFactory);
+            DefaultTrackSelector trackSelector = new DefaultTrackSelector();
             LoadControl loadControl = new DefaultLoadControl();
 
             player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
