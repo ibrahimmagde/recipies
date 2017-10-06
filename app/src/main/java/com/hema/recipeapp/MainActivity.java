@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
 
                             }
                             if (isPhone) {
-                                columns = 2;
+                                columns = 1;
                             } else {
                                 columns = 3;
                             }
