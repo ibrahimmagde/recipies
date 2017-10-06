@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.NavUtils;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import static com.hema.recipeapp.ItemListActivity.imIngr;
+import static com.hema.recipeapp.MainActivity.selectedName;
 
 
 public class ItemDetailActivity extends AppCompatActivity {
@@ -33,6 +35,22 @@ public class ItemDetailActivity extends AppCompatActivity {
 
         back = (Button) findViewById(R.id.back);
         up = (Button) findViewById(R.id.next);
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(ItemListActivity.data.get(ItemListActivity.counter).getShortDescription());
+
+        myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getApplicationContext(), ItemListActivity.class);
+                i.putExtra("title",selectedName);
+                startActivity(i);
+
+            }
+        });
 
         if (ItemListActivity.counter == 1) back.setVisibility(View.INVISIBLE);
 
@@ -156,4 +174,6 @@ public class ItemDetailActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 }

@@ -57,7 +57,9 @@ public class ItemListActivity extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(this);
 
         Bundle extras = getIntent().getExtras();
-        strtext= extras.getString("title");
+
+            strtext = extras.getString("title");
+
 
         isPhone = getResources().getBoolean(R.bool.is_phone);
 

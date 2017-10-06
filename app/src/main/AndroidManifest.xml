@@ -43,8 +43,7 @@
         </activity>
         <activity android:name=".ItemDetailActivity">
         </activity>
-        <activity android:name=".FullScreen">
-        </activity>
+
     </application>
 
 </manifest>

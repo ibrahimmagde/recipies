@@ -11,6 +11,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
+    <android.support.v7.widget.Toolbar android:id="@+id/my_toolbar"
+                                       android:layout_width="match_parent"
+                                       android:layout_height="?attr/actionBarSize"
+                                       android:background="?attr/colorPrimary"
+                                       android:elevation="4dp"
+                                       android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+                                       app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                                       xmlns:android="http://schemas.android.com/apk/res/android"
+                                       xmlns:app="http://schemas.android.com/apk/res-auto" />
+
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/item_detail_container"
@@ -24,6 +34,8 @@
         android:orientation="horizontal"
         android:layout_gravity="center"
         >
+
+
 
         <Button
             android:layout_width="100dp"

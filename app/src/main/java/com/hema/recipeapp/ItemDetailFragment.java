@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
@@ -61,7 +62,7 @@ public class ItemDetailFragment extends Fragment {
 
     public static String url,dec,sho,tab;
 
-    int pos;
+    long position;
 
     public ItemDetailFragment() {
     }
@@ -105,7 +106,14 @@ public class ItemDetailFragment extends Fragment {
 
             desc.setText(dec);
 
-            initializePlayer(Uri.parse(url));
+
+        position = C.TIME_UNSET;
+        if (savedInstanceState != null) {
+            position = savedInstanceState.getLong("ok", C.TIME_UNSET);
+        }
+
+
+           initializePlayer(Uri.parse(url));
 
 
         return rootView;
@@ -119,13 +127,18 @@ public class ItemDetailFragment extends Fragment {
             player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
             msimpleExoPlayerView.setPlayer(player);
 
+
             String userAgent = Util.getUserAgent(getContext(), "Baking App");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(getContext(), userAgent), new DefaultExtractorsFactory(), null, null);
             player.prepare(mediaSource);
             player.setPlayWhenReady(true);
+            if (position != C.TIME_UNSET) player.seekTo(position);
+
 
 
         }
+
+
     }
 
 
@@ -162,12 +175,26 @@ public class ItemDetailFragment extends Fragment {
     public void onPause() {
         super.onPause();
         if (player!=null) {
+            position = player.getCurrentPosition();
             player.stop();
             player.release();
+
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (url != null)
+            initializePlayer(Uri.parse(url));
+    }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putLong("ok", player.getCurrentPosition());
+
+        super.onSaveInstanceState(outState);
+    }
 
 
 }

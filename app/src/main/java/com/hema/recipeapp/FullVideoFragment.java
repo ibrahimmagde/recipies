@@ -86,11 +86,6 @@ public class FullVideoFragment extends Fragment {
     }
 
 
-
-
-
-
-
     @Override
     public void onDetach() {
         super.onDetach();

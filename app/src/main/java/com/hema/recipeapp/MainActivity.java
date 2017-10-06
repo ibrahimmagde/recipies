@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isPhone;
     static  public ArrayList<String> ingrdients=new ArrayList<>();
 
-    static   String selectedName;
+   public static   String selectedName;
 
     static public String mIngredients="";
 
