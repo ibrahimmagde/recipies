@@ -1,6 +1,7 @@
 package com.hema.recipeapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -8,6 +9,7 @@ import android.os.Handler;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,13 +51,15 @@ public class ItemDetailFragment extends Fragment {
     private SimpleExoPlayer player;
     public BandwidthMeter bandwidthMeter;
     public Handler mainHandler;
+    private boolean isPhone;
 
 
      SimpleExoPlayerView msimpleExoPlayerView;
 
 
 
-    String url,dec,sho,tab;
+
+    public static String url,dec,sho,tab;
 
     int pos;
 
@@ -83,23 +87,13 @@ public class ItemDetailFragment extends Fragment {
 
 
         desc= (TextView) rootView.findViewById(R.id.item_detail);
+        isPhone = getResources().getBoolean(R.bool.is_phone);
 
 
         msimpleExoPlayerView = (SimpleExoPlayerView) rootView.findViewById(R.id.playerView);
         msimpleExoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
 
 
-
-
-
-        if (getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE&&ARG_ITEM_TAB.equals("no")) {
-            desc.setVisibility(View.GONE);
-        }
-
-        initializePlayer(Uri.parse(url));
-
-
-        desc.setText(dec);
 
         if(url.equals("")){
             msimpleExoPlayerView.setVisibility(View.GONE);
@@ -109,9 +103,9 @@ public class ItemDetailFragment extends Fragment {
             msimpleExoPlayerView.setVisibility(View.VISIBLE);
         }
 
+            desc.setText(dec);
 
-
-
+            initializePlayer(Uri.parse(url));
 
 
         return rootView;
@@ -133,8 +127,6 @@ public class ItemDetailFragment extends Fragment {
 
         }
     }
-
-
 
 
 
