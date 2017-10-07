@@ -35,6 +35,7 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import static com.hema.recipeapp.ItemListActivity.imIngr;
 
 
 public class ItemDetailFragment extends Fragment {
@@ -115,8 +116,14 @@ public class ItemDetailFragment extends Fragment {
 
            initializePlayer(Uri.parse(url));
 
+        if (isPhone && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE&&imIngr==0) {
+           desc.setVisibility(View.GONE);
 
-        return rootView;
+        }
+
+
+
+            return rootView;
     }
 
     private void initializePlayer(Uri mediaUri) {

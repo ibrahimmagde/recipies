@@ -22,7 +22,7 @@ public class ItemDetailActivity extends AppCompatActivity {
     Button back;
     Button up;
     private boolean isPhone;
-
+    ItemDetailFragment fragment;
 
 
     @Override
@@ -76,7 +76,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                 arguments.putString(ItemDetailFragment.ARG_ITEM_SHOW,
                         ItemListActivity.data.get(ItemListActivity.counter).getShortDescription());
 
-                ItemDetailFragment fragment = new ItemDetailFragment();
+                 fragment = new ItemDetailFragment();
                 fragment.setArguments(arguments);
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.item_detail_container, fragment)
@@ -111,7 +111,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                         ItemListActivity.data.get(ItemListActivity.counter).getShortDescription());
 
 
-                ItemDetailFragment fragment = new ItemDetailFragment();
+                 fragment = new ItemDetailFragment();
                 fragment.setArguments(arguments);
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.item_detail_container, fragment)
@@ -138,10 +138,15 @@ public class ItemDetailActivity extends AppCompatActivity {
             arguments.putString(ItemDetailFragment.ARG_ITEM_SHOW,
                     getIntent().getStringExtra(ItemDetailFragment.ARG_ITEM_SHOW));
 
-            ItemDetailFragment fragment = new ItemDetailFragment();
+             fragment = new ItemDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.item_detail_container, fragment)
+                    .commit();
+        }else{
+              fragment = (ItemDetailFragment) getSupportFragmentManager().getFragment(savedInstanceState, "my_fragment");
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.item_detail_container, fragment)
                     .commit();
         }
 
@@ -152,14 +157,15 @@ public class ItemDetailActivity extends AppCompatActivity {
 
             up.setVisibility(View.GONE);
             back.setVisibility(View.GONE);
-            arguments.putString(FullVideoFragment.ARG_ITEM_URLL,
+
+           /* arguments.putString(FullVideoFragment.ARG_ITEM_URLL,
                     ItemListActivity.data.get(ItemListActivity.counter).getVideoURL());
 
             FullVideoFragment fragment = new FullVideoFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.item_detail_container, fragment)
-                    .commit();
+                    .commit();*/
         }
 
     }
@@ -173,6 +179,14 @@ public class ItemDetailActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        getSupportFragmentManager().putFragment(outState, "my_fragment", fragment);
+
     }
 
 

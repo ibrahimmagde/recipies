@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     static RecipeAdapter adapter ;
 
     static  ArrayList<String> data;
-
+    static  ArrayList<String> pics;
     static View.OnClickListener myOnClickListener;
 
     private int columns;
@@ -70,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
         myOnClickListener = new MyOnClickListener(this);
 
         data=new ArrayList<>();
+        pics=new ArrayList<>();
+
         requestQueue = Volley.newRequestQueue(this);
         requestQueue2 = Volley.newRequestQueue(this);
 
@@ -157,8 +159,10 @@ public class MainActivity extends AppCompatActivity {
                                 JSONObject jsonObject = response.getJSONObject(i);
 
                                 String obj = jsonObject.getString("name");
-                                data.add(obj);
+                                String photo = jsonObject.getString("image");
 
+                                data.add(obj);
+                                pics.add(photo);
 
                             }
                             if (isPhone) {
@@ -168,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                             GridLayoutManager gridlm = new GridLayoutManager(getApplicationContext(),columns);
                             recyclerView.setLayoutManager(gridlm);
-                            adapter = new RecipeAdapter(data);
+                            adapter = new RecipeAdapter(data,pics,getApplicationContext());
                             recyclerView.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
 

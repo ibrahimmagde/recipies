@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import static com.hema.recipeapp.MainActivity.selectedName;
 
 
 public class ItemListActivity extends AppCompatActivity {
@@ -56,10 +58,29 @@ public class ItemListActivity extends AppCompatActivity {
 
         requestQueue = Volley.newRequestQueue(this);
 
+
+
+
         Bundle extras = getIntent().getExtras();
 
             strtext = extras.getString("title");
 
+
+       Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(strtext);
+
+        myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+
+                startActivity(i);
+
+            }
+        });
 
         isPhone = getResources().getBoolean(R.bool.is_phone);
 
