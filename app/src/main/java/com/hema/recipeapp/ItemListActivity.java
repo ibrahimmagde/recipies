@@ -117,7 +117,7 @@ public class ItemListActivity extends AppCompatActivity {
             RecyclerView.ViewHolder viewHolder
                     = recyclerView.findViewHolderForPosition(selectedItemPosition);
             TextView textViewName
-                    = (TextView) viewHolder.itemView.findViewById(R.id.textRecipe2);
+                        = (TextView) viewHolder.itemView.findViewById(R.id.textRecipe2);
             selectedName = (String) textViewName.getText();
 
 
@@ -297,12 +297,12 @@ public class ItemListActivity extends AppCompatActivity {
 
                         Bundle arguments = new Bundle();
 
+
                         if(position==0) {
                         //      ItemDetailFragment.msimpleExoPlayerView.setVisibility(View.INVISIBLE);
 
                             SharedPreferences preferences = getApplicationContext().getSharedPreferences("SHARED", MODE_PRIVATE);
                             String ingre = preferences.getString("ingredients", "choose your Favorite Recipe ");
-                         //   Toast.makeText(getApplicationContext(), ingre, Toast.LENGTH_LONG).show();
 
                             arguments.putString(ItemDetailFragment.ARG_ITEM_URL, "");
 
@@ -329,6 +329,7 @@ public class ItemListActivity extends AppCompatActivity {
                             getSupportFragmentManager().beginTransaction()
                                     .replace(R.id.item_detail_container, fragment)
                                     .commit();
+
 
 
 

@@ -71,10 +71,7 @@ public class ItemDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-
-        url =  getArguments().getString(ARG_ITEM_URL);
+           url =  getArguments().getString(ARG_ITEM_URL);
            dec= getArguments().getString(ARG_ITEM_DESC);
            sho =getArguments().getString(ARG_ITEM_SHOW);
            tab=getArguments().getString(ARG_ITEM_TAB);
@@ -120,8 +117,6 @@ public class ItemDetailFragment extends Fragment {
            desc.setVisibility(View.GONE);
 
         }
-
-
 
             return rootView;
     }

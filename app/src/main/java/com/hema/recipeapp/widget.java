@@ -37,7 +37,6 @@ public class widget extends  AppWidgetProvider {
             views.setTextViewText(R.id.ttt ,ingre);
             // Tell the AppWidgetManager to perform an update on the current app widget
             appWidgetManager.updateAppWidget(appWidgetId, views);
-            Toast.makeText(context, "widget added", Toast.LENGTH_SHORT).show();
 
         }
     }

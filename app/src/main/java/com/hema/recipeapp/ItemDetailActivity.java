@@ -76,7 +76,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                 arguments.putString(ItemDetailFragment.ARG_ITEM_SHOW,
                         ItemListActivity.data.get(ItemListActivity.counter).getShortDescription());
 
-                 fragment = new ItemDetailFragment();
+                fragment = new ItemDetailFragment();
                 fragment.setArguments(arguments);
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.item_detail_container, fragment)
@@ -166,6 +166,12 @@ public class ItemDetailActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.item_detail_container, fragment)
                     .commit();*/
+        }
+
+        if(!isPhone &&  getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            Intent i = new Intent(this, ItemListActivity.class);
+            i.putExtra("title",selectedName);
+            startActivity(i);
         }
 
     }
