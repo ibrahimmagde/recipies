@@ -144,8 +144,67 @@ public class ItemDetailFragment extends Fragment {
     }
 
 
+    ///////
+
+
+
+    private void savePlayerState() {
+        if (player != null) {
+            position = player.getCurrentPosition();
+        }
+    }
+
+    private void release() {
+        if (player != null) {
+            player.stop();
+            player.release();
+            player = null;
+        }
+    }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+        release();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        release();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        release();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        savePlayerState();
+        release();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        savePlayerState();
+        outState.putLong("ok", position);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (url != null)
+            initializePlayer(Uri.parse(url));
+    }
+    /////
+
+
+
+   /* @Override
     public void onDetach() {
         super.onDetach();
         if (player!=null) {
@@ -196,7 +255,11 @@ public class ItemDetailFragment extends Fragment {
         outState.putLong("ok", player.getCurrentPosition());
 
         super.onSaveInstanceState(outState);
-    }
+    }*/
+
+
+
+
 
 
 }
