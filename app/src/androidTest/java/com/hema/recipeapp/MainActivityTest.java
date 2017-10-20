@@ -56,11 +56,11 @@ public class MainActivityTest {
                 allOf(withId(R.id.item_list),
                         withParent(withId(R.id.frameLayout)),
                         isDisplayed()));
-        recyclerView3.perform(actionOnItemAtPosition(1, click()));
+        // recyclerView3.perform(actionOnItemAtPosition(1, click()));
 
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
-        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        // https://g...content-available-to-author-only...b.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
